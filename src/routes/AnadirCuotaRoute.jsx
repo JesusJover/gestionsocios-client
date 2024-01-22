@@ -4,11 +4,17 @@ import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Loader from "../components/Loader";
 import Select from "react-select";
+import Footer from "../components/Footer";
+import useCheckAuth from "../hooks/useCheckAuth";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default function AnadirCuotaRoute() {
    const [loading, setLoading] = useState(false)
    const [response, setResponse] = useState(null)
    const [sociosSelected, setSociosSelected] = useState([])
+   const [amount, setAmount] = useState(0)
+   const { getAccessTokenSilently } = useAuth0()
+   useCheckAuth()
 
    const navigate = useNavigate();
 
@@ -23,6 +29,8 @@ export default function AnadirCuotaRoute() {
       document.title = "Añadir cuota";
    }, []);
 
+
+
    function handleSubmit(event) {
       event.preventDefault();
       const formData = new FormData(event.target);
@@ -32,12 +40,17 @@ export default function AnadirCuotaRoute() {
       console.log(data)
 
       setLoading(true)
-      fetch("https://gestionasociacion-api.fly.dev/nuevacuota", {
-         method: "POST",
-         headers: {
-            "Content-Type": "application/json",
-         },
-         body: JSON.stringify(data),
+      getAccessTokenSilently()
+      .then((token) => {
+         return fetch("https://gestionasociacion-api.fly.dev/nuevacuota", {
+         // return fetch("http://localhost:3000/nuevacuota", {
+            method: "POST",
+            headers: {
+               "Content-Type": "application/json",
+               "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify(data),
+         })
       })
       .then((response) => response.json())
       .then((response) => {
@@ -47,7 +60,15 @@ export default function AnadirCuotaRoute() {
    }
 
    function generateTicket() {
-      fetch("https://gestionasociacion-api.fly.dev/socios")
+      getAccessTokenSilently()
+      .then((token) => {
+         return fetch("https://gestionasociacion-api.fly.dev/socios",{
+            headers: {
+               "Content-Type": "application/json",
+               "Authorization": `Bearer ${token}`
+            },
+      })
+      })
       .then(res => res.json())
       .then(socios => {
          const cuotas = socios.map(socio => { return socio.cuotas })
@@ -81,13 +102,16 @@ export default function AnadirCuotaRoute() {
                         options={sociosOptions}
                         noOptionsMessage={() => "No hay socios con ese nombre o apellido"}
                         className="basic-multi-select"
-                        onChange={val => setSociosSelected(val)}
+                        onChange={val => {
+                           setSociosSelected(val)
+                           setAmount(val.length*10)
+                        }}
                      />
                   </div>
    
                   <div className="flex items-center gap-2">
                      <label htmlFor="importe">Importe: </label>
-                     <input type="number" name="importe" id="importe" placeholder="10" className="ml-3 p-2 max-w-[100px]" required/> €
+                     <input type="number" name="importe" id="importe" value={amount} onChange={(e) => {setAmount(e.value)}} placeholder="10" className="ml-3 p-2 max-w-[100px]" required/> €
                   </div>
    
                   <div className="flex items-center gap-2">
@@ -123,7 +147,7 @@ export default function AnadirCuotaRoute() {
                <p>Fecha de pago: {response.FechaPago}</p>
                <p>Lugar de pago: {response.MetodoPago}</p>
             </div>
-            <button onClick={() => generateTicket()} className="flex justify-center items-center text-xl bg-blue-400 text-white font-bold py-2 px-4 rounded mt-5">
+            <button onClick={() => generateTicket()} className="flex justify-center items-center text-xl bg-blue-500 text-white font-bold py-2 px-4 rounded mt-5">
                Generar resguardo
             </button>
 
@@ -133,6 +157,7 @@ export default function AnadirCuotaRoute() {
             </button>
          </> }
         </main>
+        <Footer />
       </div>
     );
 }

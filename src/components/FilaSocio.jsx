@@ -21,8 +21,8 @@ export default function FilaSocio ({
 
       // La fecha de caducidad es la fecha de la última cuota pagada + 1 año
       fechaCaducidad = new Date(ultimaCuotaPagada.FechaPago.split("/").reverse().join("-"))
-      fechaCaducidad.setFullYear(fechaCaducidad.getFullYear() + 1)
-      fechaCaducidad.toLocaleString()
+      // fechaCaducidad.setFullYear(fechaCaducidad.getFullYear() + 1)
+      // fechaCaducidad.toLocaleString()
 
       // Calcula los días restantes hasta la fecha de caducidad
       const hoy = new Date()
@@ -37,19 +37,19 @@ export default function FilaSocio ({
    return (<>
       <div className="m-3 hover:font-bold cursor-pointer" onClick={() => {navigate(`/socio/${socio.IdSocio}`, { state: { socio, socios }})}}>
          <p className="inline-block mr-3">[#{socio.IdSocio}] {socio.NombreTitular.toUpperCase()} {socio.ApellidosTitular.toUpperCase()}</p>
-         { socio.cuotaPagada && diasRestantes > 30 &&
+         { socio.cuotaPagada &&
             <div className="inline-block py-1 px-2 bg-green-200 rounded-lg">
                Cuota pagada
             </div>
          }
-         { socio.cuotaPagada && diasRestantes <= 30 &&
+         {/* { socio.cuotaPagada && diasRestantes <= 30 &&
             <div className="inline-block py-1 px-2 bg-amber-200 rounded-lg">
                Caduca próximamente, el {fechaCaducidad.toLocaleDateString()}
             </div>
-         }
+         } */}
          { !socio.cuotaPagada &&
             <div className="inline-block py-1 px-2 bg-red-200 rounded-lg">
-               { ultimaCuotaPagada && `Cuota caducada el ${fechaCaducidad.toLocaleDateString()}` }
+               { ultimaCuotaPagada && `Cuota caducada en ${fechaCaducidad.getFullYear()}` }
                { !ultimaCuotaPagada && `Sin cuotas` }
             </div>
          }

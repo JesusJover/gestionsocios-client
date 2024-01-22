@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.fondo-carnet-socio {
+   background-image: url("/public/imagen-carnet-socio-2024.jpg");
+   background-size: cover;
+   background-position: bottom;
+}
