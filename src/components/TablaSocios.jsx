@@ -72,6 +72,17 @@ export default function TablaSocios ({
       return { ano, cuotas, IdSociosUnicos }
    })
 
+   const cuotasAnoActual = cuotasPagadasUnicas.filter(cuota => cuota.FechaPago.split("/")[2] === "2024")
+   // Separar por lugar de pago
+   const cuotasPagadasEstanco = cuotasAnoActual.filter(cuota => cuota.MetodoPago === "Estanco")
+   const numCuotasEstanco = cuotasPagadasEstanco.reduce((numCuotas, cuota) => {
+      return numCuotas + cuota.IdSocios.split(",").length
+   }, 0)
+   const cuotasPagadasCentroSocial = cuotasAnoActual.filter(cuota => cuota.MetodoPago === "Centro social")
+   const numCuotasCentroSocial = cuotasPagadasCentroSocial.reduce((numCuotas, cuota) => {
+      return numCuotas + cuota.IdSocios.split(",").length
+   }, 0)
+
    if (loading) {
       return (<Loader />)
    }
@@ -86,6 +97,8 @@ export default function TablaSocios ({
                   return <p key={index} className="mx-3 font-bold">Pagados en {resumen.ano}: <span className="inline-block w-[35px]">{resumen.IdSociosUnicos.length}</span></p>
                }
                )}
+               <p className="mx-3 font-bold">Socios 2024 en Estanco: {numCuotasEstanco}</p>
+               <p className="mx-3 font-bold">Cuotas 2024 en Centro Social: {numCuotasCentroSocial}</p>
                {/* <p className="mx-3 font-bold">Con cuota pagada: {socios.filter(socio => socio.cuotaPagada).length}</p> */}
             </div>
             <input className="border border-gray-200 p-2 rounded-lg" onChange={filtrar} type="text" placeholder="Buscar socios"/>

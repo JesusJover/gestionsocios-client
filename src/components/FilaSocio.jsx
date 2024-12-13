@@ -5,7 +5,7 @@ export default function FilaSocio ({
    socios
 }) {
    const navigate = useNavigate()
-   let ultimaCuotaPagada, fechaCaducidad, diasRestantes
+   let ultimaCuotaPagada, fechaCaducidad, diasRestantes, ano, mes, dia, fechaCaducidadPartes
 
    if (socio.cuotas.length !== 0) {
       // Del array socios.cuotas obten la última cuota pagada (cuya FechaPago sea la más reciente)
@@ -20,7 +20,11 @@ export default function FilaSocio ({
       })
 
       // La fecha de caducidad es la fecha de la última cuota pagada + 1 año
-      fechaCaducidad = new Date(ultimaCuotaPagada.FechaPago.split("/").reverse().join("-"))
+      fechaCaducidadPartes = ultimaCuotaPagada.FechaPago.split("/")
+      ano = fechaCaducidadPartes[2].padStart(4, "0")
+      mes = fechaCaducidadPartes[1].padStart(2, "0")
+      dia = fechaCaducidadPartes[0].padStart(2, "0")
+      fechaCaducidad = new Date(ano, mes, dia)
       // fechaCaducidad.setFullYear(fechaCaducidad.getFullYear() + 1)
       // fechaCaducidad.toLocaleString()
 
